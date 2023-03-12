@@ -2,8 +2,65 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { ChainInfo } from '@/lib/keplr'
 
 const inter = Inter({ subsets: ['latin'] })
+
+const noisConfig: ChainInfo = {
+	"chainId": "nois-testnet-003",
+	"chainName": "Nois Testnet",
+	"rpc": "https://rpc.nois.mcbnode.online",
+	"rest": "https://api.nois.mcbnode.online",
+	"bip44": {
+    coinType: 118
+  },
+	"bech32Config": {
+		"bech32PrefixAccAddr": "nois",
+		"bech32PrefixAccPub": "noispub",
+		"bech32PrefixValAddr": "noisvaloper",
+		"bech32PrefixValPub": "noisvaloperpub",
+		"bech32PrefixConsAddr": "noisvalcons",
+		"bech32PrefixConsPub": "noisvalconspub"
+	},
+	"currencies": [
+		{
+			"coinDenom": "NOIS",
+			"coinMinimalDenom": "unois",
+			"coinDecimals": 6,
+			"coinGeckoId": "unknown"
+		}
+	],
+	"feeCurrencies": [
+		{
+			"coinDenom": "NOIS",
+			"coinMinimalDenom": "unois",
+			"coinDecimals": 6,
+			"coinGeckoId": "unknown",
+      gasPriceStep: {
+        "low": 0.05,
+        "average": 0.05,
+        "high": 0.1
+      }
+		}
+	],
+	"stakeCurrency": {
+		"coinDenom": "NOIS",
+		"coinMinimalDenom": "unois",
+		"coinDecimals": 6,
+		"coinGeckoId": "unknown"
+	},
+	"features": []
+}
+
+function addNoisAsSuggestedChain() {
+  console.log("Do it!")
+  const anyWindow: any = window;
+  if (!anyWindow.keplr) {
+    alert("Keplr not found")
+  } else {
+    anyWindow.keplr.experimentalSuggestChain(noisConfig);
+  }
+}
 
 export default function Home() {
   return (
@@ -15,53 +72,13 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>src/pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
         <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
+          <button onClick={() => addNoisAsSuggestedChain()}>Add Nois Testnet to Keplr</button>
         </div>
 
         <div className={styles.grid}>
           <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            href="https://docs.nois.network"
             className={styles.card}
             target="_blank"
             rel="noopener noreferrer"
@@ -70,50 +87,49 @@ export default function Home() {
               Docs <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
+              All about Nois
             </p>
           </a>
 
           <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            href="https://chat.nois.network"
             className={styles.card}
             target="_blank"
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
+              Chat <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
+              Get help and meet the community
             </p>
           </a>
 
           <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            href="https://whitepaper.nois.network"
             className={styles.card}
             target="_blank"
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
+              Whitepaper <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
+              The whitepaper.
             </p>
           </a>
 
           <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            href="https://twitter.com/NoisNetwork"
             className={styles.card}
             target="_blank"
             rel="noopener noreferrer"
           >
             <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
+              Twitter <span>-&gt;</span>
             </h2>
             <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
+              Follow Nois on Twitter to get the latest news about the project.
             </p>
           </a>
         </div>
