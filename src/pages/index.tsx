@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { noisConfig } from "@/lib/noisConfig";
+import { chainId, noisConfig } from "@/lib/noisConfig";
 import { useState } from "react";
 import {
   Alert,
@@ -10,19 +10,34 @@ import {
   Button,
   VStack,
   useToast,
+  Text,
+  Divider,
+  Heading,
 } from "@chakra-ui/react";
-import { FaCheck, FaPlus } from "react-icons/fa";
+import { FaCheck, FaPlus, FaUser } from "react-icons/fa";
 
 export default function Home() {
-  const [lastError, setLastError] = useState<{ title: string; description: string }>();
-  const [installed, setInstalled] = useState(false);
+  const [lastAddChainError, setAddChainError] = useState<{ title: string; description: string }>();
+  const [loadAddressError, setLoadAddressError] = useState<{
+    title: string;
+    description: string;
+  }>();
+  const [installed, setInstalled] = useState<boolean>();
+  const [address, setAddress] = useState<string>();
   const toast = useToast();
 
+  function resetErrors() {
+    toast.closeAll();
+    setAddChainError(undefined);
+    setLoadAddressError(undefined);
+  }
+
   function addNoisAsSuggestedChain() {
-    setLastError(undefined);
+    resetErrors();
+
     const anyWindow: any = window;
     if (!anyWindow.keplr) {
-      setLastError({
+      setAddChainError({
         title: "Keplr not found",
         description: "It seems like Keplr is not installed.",
       });
@@ -32,18 +47,70 @@ export default function Home() {
           console.log("Suggested chain installed");
           setInstalled(true);
           toast({
-            title: "Installed.",
+            title: "Installed",
             description: "Nois Testnet installed in Keplr.",
             status: "success",
-            duration: 3_000,
+            duration: 2_000,
             isClosable: true,
           });
         },
         (err: any) => {
           console.error(err);
-          setLastError({
+          setAddChainError({
             title: "Suggested chain could not be added",
             description: err.toString(),
+          });
+        },
+      );
+    }
+  }
+
+  function loadAddressFromKeplr() {
+    resetErrors();
+    setAddress(undefined);
+
+    const anyWindow: any = window;
+    if (!anyWindow.keplr) {
+      setLoadAddressError({
+        title: "Keplr not found",
+        description: "It seems like Keplr is not installed.",
+      });
+    } else {
+      const keplr = anyWindow.keplr;
+      keplr.enable(chainId).then(
+        () => {
+          console.log("Chain enabled");
+
+          const offlineSigner = keplr.getOfflineSigner(chainId);
+          offlineSigner.getAccounts().then(
+            (accounts: any) => {
+              console.log("Accounts:", accounts);
+              const address = accounts[0].address;
+              if (typeof address !== "string")
+                throw new Error("First account must have a string address");
+              setAddress(address);
+              toast({
+                title: "Loaded",
+                description: "Got account address from Keplr.",
+                status: "success",
+                duration: 2_000,
+                isClosable: true,
+              });
+            },
+            (err: any) => {
+              console.error(err);
+              setLoadAddressError({
+                title: "Account unavailable",
+                description: "Could not get account from Keplr.",
+              });
+            },
+          );
+        },
+        (err: any) => {
+          console.error(err);
+          setLoadAddressError({
+            title: "Keplr unavailable",
+            description: "Could not enable Keplr with the given chain ID.",
           });
         },
       );
@@ -58,26 +125,46 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <VStack>
-          <p>
-            <Button
-              leftIcon={installed ? <FaCheck /> : <FaPlus />}
-              isDisabled={installed}
-              colorScheme="blue"
-              variant="solid"
-              onClick={() => addNoisAsSuggestedChain()}
-            >
-              {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
-            </Button>
-          </p>
+        <VStack spacing={10}>
+        <Heading>Step 1</Heading>
+          <Button
+            leftIcon={installed ? <FaCheck /> : <FaPlus />}
+            isDisabled={installed}
+            colorScheme="blue"
+            variant="solid"
+            onClick={() => addNoisAsSuggestedChain()}
+          >
+            {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
+          </Button>
 
-          {lastError && (
+          {lastAddChainError && (
             <Alert status="error">
               <AlertIcon />
-              <AlertTitle>{lastError.title}</AlertTitle>
-              <AlertDescription>{lastError.description}</AlertDescription>
+              <AlertTitle>{lastAddChainError.title}</AlertTitle>
+              <AlertDescription>{lastAddChainError.description}</AlertDescription>
             </Alert>
           )}
+
+        <Heading>Step 2</Heading>
+
+          <Button
+            leftIcon={<FaUser />}
+            colorScheme="blue"
+            variant="solid"
+            onClick={() => loadAddressFromKeplr()}
+          >
+            Load Address
+          </Button>
+
+          {loadAddressError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>{loadAddressError.title}</AlertTitle>
+              <AlertDescription>{loadAddressError.description}</AlertDescription>
+            </Alert>
+          )}
+
+          {address && <Text size="lg">{address}</Text>}
         </VStack>
       </main>
     </>

@@ -1,7 +1,9 @@
 import { ChainInfo } from "./keplr";
 
+export const chainId = "nois-testnet-003";
+
 export const noisConfig: ChainInfo = {
-  chainId: "nois-testnet-003",
+  chainId: chainId,
   chainName: "Nois Testnet",
   rpc: "https://rpc.nois.mcbnode.online",
   rest: "https://api.nois.mcbnode.online",
