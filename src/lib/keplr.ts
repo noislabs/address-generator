@@ -37,12 +37,7 @@ export type FeeCurrency = WithGasPriceStep<AppCurrency>;
 /**
  * Any type of currency that Kepler applications can support.
  */
-export type AppCurrency =
-  | Currency
-  | CW20Currency
-  | Secret20Currency
-  | IBCCurrency
-  | ERC20Currency;
+export type AppCurrency = Currency | CW20Currency | Secret20Currency | IBCCurrency | ERC20Currency;
 
 export interface BIP44 {
   readonly coinType: number;

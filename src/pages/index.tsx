@@ -1,62 +1,62 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import { ChainInfo } from '@/lib/keplr'
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { ChainInfo } from "@/lib/keplr";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 const noisConfig: ChainInfo = {
-	"chainId": "nois-testnet-003",
-	"chainName": "Nois Testnet",
-	"rpc": "https://rpc.nois.mcbnode.online",
-	"rest": "https://api.nois.mcbnode.online",
-	"bip44": {
-    coinType: 118
+  chainId: "nois-testnet-003",
+  chainName: "Nois Testnet",
+  rpc: "https://rpc.nois.mcbnode.online",
+  rest: "https://api.nois.mcbnode.online",
+  bip44: {
+    coinType: 118,
   },
-	"bech32Config": {
-		"bech32PrefixAccAddr": "nois",
-		"bech32PrefixAccPub": "noispub",
-		"bech32PrefixValAddr": "noisvaloper",
-		"bech32PrefixValPub": "noisvaloperpub",
-		"bech32PrefixConsAddr": "noisvalcons",
-		"bech32PrefixConsPub": "noisvalconspub"
-	},
-	"currencies": [
-		{
-			"coinDenom": "NOIS",
-			"coinMinimalDenom": "unois",
-			"coinDecimals": 6,
-			"coinGeckoId": "unknown"
-		}
-	],
-	"feeCurrencies": [
-		{
-			"coinDenom": "NOIS",
-			"coinMinimalDenom": "unois",
-			"coinDecimals": 6,
-			"coinGeckoId": "unknown",
+  bech32Config: {
+    bech32PrefixAccAddr: "nois",
+    bech32PrefixAccPub: "noispub",
+    bech32PrefixValAddr: "noisvaloper",
+    bech32PrefixValPub: "noisvaloperpub",
+    bech32PrefixConsAddr: "noisvalcons",
+    bech32PrefixConsPub: "noisvalconspub",
+  },
+  currencies: [
+    {
+      coinDenom: "NOIS",
+      coinMinimalDenom: "unois",
+      coinDecimals: 6,
+      coinGeckoId: "unknown",
+    },
+  ],
+  feeCurrencies: [
+    {
+      coinDenom: "NOIS",
+      coinMinimalDenom: "unois",
+      coinDecimals: 6,
+      coinGeckoId: "unknown",
       gasPriceStep: {
-        "low": 0.05,
-        "average": 0.05,
-        "high": 0.1
-      }
-		}
-	],
-	"stakeCurrency": {
-		"coinDenom": "NOIS",
-		"coinMinimalDenom": "unois",
-		"coinDecimals": 6,
-		"coinGeckoId": "unknown"
-	},
-	"features": []
-}
+        low: 0.05,
+        average: 0.05,
+        high: 0.1,
+      },
+    },
+  ],
+  stakeCurrency: {
+    coinDenom: "NOIS",
+    coinMinimalDenom: "unois",
+    coinDecimals: 6,
+    coinGeckoId: "unknown",
+  },
+  features: [],
+};
 
 function addNoisAsSuggestedChain() {
-  console.log("Do it!")
+  console.log("Do it!");
   const anyWindow: any = window;
   if (!anyWindow.keplr) {
-    alert("Keplr not found")
+    alert("Keplr not found");
   } else {
     anyWindow.keplr.experimentalSuggestChain(noisConfig);
   }
@@ -86,9 +86,7 @@ export default function Home() {
             <h2 className={inter.className}>
               Docs <span>-&gt;</span>
             </h2>
-            <p className={inter.className}>
-              All about Nois
-            </p>
+            <p className={inter.className}>All about Nois</p>
           </a>
 
           <a
@@ -100,9 +98,7 @@ export default function Home() {
             <h2 className={inter.className}>
               Chat <span>-&gt;</span>
             </h2>
-            <p className={inter.className}>
-              Get help and meet the community
-            </p>
+            <p className={inter.className}>Get help and meet the community</p>
           </a>
 
           <a
@@ -114,9 +110,7 @@ export default function Home() {
             <h2 className={inter.className}>
               Whitepaper <span>-&gt;</span>
             </h2>
-            <p className={inter.className}>
-              The whitepaper.
-            </p>
+            <p className={inter.className}>The whitepaper.</p>
           </a>
 
           <a
@@ -135,5 +129,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  )
+  );
 }
