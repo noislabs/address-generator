@@ -2,14 +2,21 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import { noisConfig } from "@/lib/noisConfig";
 import { useState } from "react";
-import { Alert, AlertIcon, AlertTitle, AlertDescription, Button, VStack,
-  useToast } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  Button,
+  VStack,
+  useToast,
+} from "@chakra-ui/react";
 import { FaCheck, FaPlus } from "react-icons/fa";
 
 export default function Home() {
   const [lastError, setLastError] = useState<{ title: string; description: string }>();
   const [installed, setInstalled] = useState(false);
-  const toast = useToast()
+  const toast = useToast();
 
   function addNoisAsSuggestedChain() {
     setLastError(undefined);
@@ -25,12 +32,12 @@ export default function Home() {
           console.log("Suggested chain installed");
           setInstalled(true);
           toast({
-            title: 'Installed.',
+            title: "Installed.",
             description: "Nois Testnet installed in Keplr.",
-            status: 'success',
+            status: "success",
             duration: 3_000,
             isClosable: true,
-          })
+          });
         },
         (err: any) => {
           console.error(err);
@@ -72,58 +79,6 @@ export default function Home() {
             </Alert>
           )}
         </VStack>
-
-        <div className={styles.grid}>
-          <a
-            href="https://docs.nois.network"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p>All about Nois</p>
-          </a>
-
-          <a
-            href="https://chat.nois.network"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Chat <span>-&gt;</span>
-            </h2>
-            <p>Get help and meet the community</p>
-          </a>
-
-          <a
-            href="https://whitepaper.nois.network"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Whitepaper <span>-&gt;</span>
-            </h2>
-            <p>The whitepaper.</p>
-          </a>
-
-          <a
-            href="https://twitter.com/NoisNetwork"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2>
-              Twitter <span>-&gt;</span>
-            </h2>
-            <p>
-              Follow Nois on Twitter to get the latest news about the project.
-            </p>
-          </a>
-        </div>
       </main>
     </>
   );
