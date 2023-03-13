@@ -1,9 +1,18 @@
 import Head from "next/head";
-import styles from "@/styles/Home.module.css";
 import { addressPrefix, chainId, noisConfig } from "@/lib/noisConfig";
 import { useState } from "react";
-import { Button, VStack, useToast, Text, Heading, Divider } from "@chakra-ui/react";
-import { FaCheck, FaPlus, FaUser } from "react-icons/fa";
+import {
+  Button,
+  VStack,
+  useToast,
+  Text,
+  Heading,
+  SimpleGrid,
+  Box,
+  Container,
+} from "@chakra-ui/react";
+import { CloseIcon } from "@chakra-ui/icons";
+import { FaCheck, FaPlus, FaUser, FaUserSecret, FaUserShield, FaClose } from "react-icons/fa";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
@@ -142,6 +151,11 @@ export default function Home() {
     });
   }
 
+  function resetAll() {
+    resetErrors();
+    setAddress(undefined);
+  }
+
   return (
     <>
       <Head>
@@ -149,52 +163,79 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <VStack spacing={10}>
-          <Heading>Step 1</Heading>
-          <Button
-            leftIcon={installed ? <FaCheck /> : <FaPlus />}
-            isDisabled={installed}
-            colorScheme="blue"
-            variant="solid"
-            onClick={() => addNoisAsSuggestedChain()}
-          >
-            {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
-          </Button>
+      <Container maxW="800px" marginTop="40px">
+        <SimpleGrid minChildWidth="300px" spacing="40px">
+          <Box>
+            <VStack spacing={4} align="flex-start">
+              <Heading>Keplr Extension</Heading>
 
-          {lastAddChainError && <ErrorAlert error={lastAddChainError} />}
+              <Heading size="sm">Step 1</Heading>
 
-          <Heading>Step 2</Heading>
+              <Text>Install Keplr browser extension.</Text>
 
-          <Button
-            leftIcon={<FaUser />}
-            colorScheme="blue"
-            variant="solid"
-            onClick={() => loadAddressFromKeplr()}
-          >
-            Load Address
-          </Button>
+              <Heading size="sm">Step 2</Heading>
+              <Button
+                leftIcon={installed ? <FaCheck /> : <FaPlus />}
+                isDisabled={installed}
+                colorScheme="blue"
+                variant="solid"
+                size="sm"
+                onClick={() => addNoisAsSuggestedChain()}
+              >
+                {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
+              </Button>
 
-          {loadAddressError && <ErrorAlert error={loadAddressError} />}
+              {lastAddChainError && <ErrorAlert error={lastAddChainError} />}
 
-          <Heading>Ledger</Heading>
+              <Heading size="sm">Step 3</Heading>
 
-          <Button
-            leftIcon={<FaUser />}
-            colorScheme="blue"
-            variant="solid"
-            onClick={() => loadAddressFromLedger()}
-          >
-            Load Address from Ledger
-          </Button>
+              <Button
+                leftIcon={<FaUserShield />}
+                colorScheme="blue"
+                variant="solid"
+                size="sm"
+                onClick={() => loadAddressFromKeplr()}
+              >
+                Load Address
+              </Button>
 
-          {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
+              {loadAddressError && <ErrorAlert error={loadAddressError} />}
+            </VStack>
+          </Box>
+          <Box>
+            <VStack spacing={4} align="flex-start">
+              <Heading>Ledger via WebUSB</Heading>
 
-          <Divider />
+              <Heading size="sm">Step 1</Heading>
 
-          {address && <Text fontSize="2xl">{address}</Text>}
-        </VStack>
-      </main>
+              <Text>Install and open Cosmos app on Ledger Nano S or Nano X.</Text>
+
+              <Heading size="sm">Step 2</Heading>
+
+              <Button
+                leftIcon={<FaUserSecret />}
+                colorScheme="blue"
+                variant="solid"
+                size="sm"
+                onClick={() => loadAddressFromLedger()}
+              >
+                Load Address from Ledger
+              </Button>
+
+              {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
+            </VStack>
+          </Box>
+        </SimpleGrid>
+
+        {address && (
+          <Text marginTop="100px" fontSize="2xl" align="center">
+            {address}{" "}
+            <Button size="sm" onClick={() => resetAll()} title="Reset">
+              <CloseIcon />
+            </Button>
+          </Text>
+        )}
+      </Container>
     </>
   );
 }
