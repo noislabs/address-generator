@@ -142,6 +142,10 @@ export default function Home() {
         duration: 2_000,
         isClosable: true,
       });
+      offlineSigner.showAddress().then(
+        () => {},
+        (err: any) => {},
+      );
     })().catch((err: any) => {
       console.error(err);
       setAddressFromLedgerError({
@@ -207,7 +211,6 @@ export default function Home() {
               <Heading>Ledger via WebUSB</Heading>
 
               <Heading size="sm">Step 1</Heading>
-
               <Text>Install and open Cosmos app on Ledger Nano S or Nano X.</Text>
 
               <Heading size="sm">Step 2</Heading>
@@ -223,6 +226,9 @@ export default function Home() {
               </Button>
 
               {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
+
+              <Heading size="sm">Step 3</Heading>
+              <Text>Check address on Ledger device to ensure they match.</Text>
             </VStack>
           </Box>
         </SimpleGrid>
