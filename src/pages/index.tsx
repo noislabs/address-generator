@@ -12,7 +12,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { FaCheck, FaPlus, FaUser, FaUserSecret, FaUserShield, FaClose } from "react-icons/fa";
+import { FaCheck, FaPlus, FaUserSecret, FaUserShield } from "react-icons/fa";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
