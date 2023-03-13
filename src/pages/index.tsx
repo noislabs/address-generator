@@ -12,7 +12,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
-import { FaCheck, FaPlus, FaUserSecret, FaUserShield } from "react-icons/fa";
+import { FaCheck, FaCheckDouble, FaPlus, FaUserSecret, FaUserShield } from "react-icons/fa";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
@@ -20,8 +20,10 @@ import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
 export default function Home() {
   const [lastAddChainError, setAddChainError] = useState<ErrorData>();
   const [loadAddressError, setLoadAddressError] = useState<ErrorData>();
-  const [loadAddressFromLedgerError, setAddressFromLedgerError] = useState<ErrorData>();
+  const [loadAddressFromLedgerError, setLoadAddressFromLedgerError] = useState<ErrorData>();
+  const [showAddressFromLedgerError, setShowAddressFromLedgerError] = useState<ErrorData>();
   const [installed, setInstalled] = useState<boolean>();
+  const [enableShowOnLedger, setEnableShowOnLedger] = useState<boolean>(false);
   const [address, setAddress] = useState<string>();
   const toast = useToast();
 
@@ -29,7 +31,8 @@ export default function Home() {
     toast.closeAll();
     setAddChainError(undefined);
     setLoadAddressError(undefined);
-    setAddressFromLedgerError(undefined);
+    setLoadAddressFromLedgerError(undefined);
+    setShowAddressFromLedgerError(undefined);
   }
 
   function addNoisAsSuggestedChain() {
@@ -129,7 +132,6 @@ export default function Home() {
       const offlineSigner = new LedgerSigner(ledgerTransport, {
         prefix: addressPrefix,
       });
-      console.log(offlineSigner);
       const accounts = await offlineSigner.getAccounts();
       console.log(accounts);
       const address = accounts[0].address;
@@ -142,22 +144,45 @@ export default function Home() {
         duration: 2_000,
         isClosable: true,
       });
-      offlineSigner.showAddress().then(
-        () => {},
-        (err: any) => {},
-      );
+      setEnableShowOnLedger(true);
     })().catch((err: any) => {
       console.error(err);
-      setAddressFromLedgerError({
+      setLoadAddressFromLedgerError({
         title: "Ledger error",
         description: err.message ?? err.toString(),
       });
     });
   }
 
+  function showAddressFromLedger() {
+    resetErrors();
+
+    (async () => {
+      // Prepare ledger
+      const ledgerTransport = await TransportWebUSB.create(120000, 120000);
+
+      // Setup signer
+      const offlineSigner = new LedgerSigner(ledgerTransport, {
+        prefix: addressPrefix,
+      });
+      await offlineSigner.showAddress();
+    })().catch((err: any) => {
+      if (err.toString().match(/rejected by the user/i)) {
+        console.info(err); // this case is fine
+      } else {
+        console.error(err);
+        setShowAddressFromLedgerError({
+          title: "Ledger error",
+          description: err.message ?? err.toString(),
+        });
+      }
+    });
+  }
+
   function resetAll() {
     resetErrors();
     setAddress(undefined);
+    setEnableShowOnLedger(false);
   }
 
   return (
@@ -200,7 +225,7 @@ export default function Home() {
                 size="sm"
                 onClick={() => loadAddressFromKeplr()}
               >
-                Load Address
+                Load address
               </Button>
 
               {loadAddressError && <ErrorAlert error={loadAddressError} />}
@@ -222,13 +247,25 @@ export default function Home() {
                 size="sm"
                 onClick={() => loadAddressFromLedger()}
               >
-                Load Address from Ledger
+                Load address from Ledger
               </Button>
 
               {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
 
               <Heading size="sm">Step 3</Heading>
-              <Text>Check address on Ledger device to ensure they match.</Text>
+              <Text>Check address on Ledger device.</Text>
+              <Button
+                isDisabled={!enableShowOnLedger}
+                leftIcon={<FaCheckDouble />}
+                colorScheme="blue"
+                variant="solid"
+                size="sm"
+                onClick={() => showAddressFromLedger()}
+              >
+                Show address on Ledger
+              </Button>
+
+              {showAddressFromLedgerError && <ErrorAlert error={showAddressFromLedgerError} />}
             </VStack>
           </Box>
         </SimpleGrid>
