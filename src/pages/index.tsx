@@ -2,32 +2,16 @@ import Head from "next/head";
 import styles from "@/styles/Home.module.css";
 import { addressPrefix, chainId, noisConfig } from "@/lib/noisConfig";
 import { useState } from "react";
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Button,
-  VStack,
-  useToast,
-  Text,
-  Divider,
-  Heading,
-} from "@chakra-ui/react";
+import { Button, VStack, useToast, Text, Heading, Divider } from "@chakra-ui/react";
 import { FaCheck, FaPlus, FaUser } from "react-icons/fa";
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
+import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
 
 export default function Home() {
-  const [lastAddChainError, setAddChainError] = useState<{ title: string; description: string }>();
-  const [loadAddressError, setLoadAddressError] = useState<{
-    title: string;
-    description: string;
-  }>();
-  const [loadAddressFromLedgerError, setAddressFromLedgerError] = useState<{
-    title: string;
-    description: string;
-  }>();
+  const [lastAddChainError, setAddChainError] = useState<ErrorData>();
+  const [loadAddressError, setLoadAddressError] = useState<ErrorData>();
+  const [loadAddressFromLedgerError, setAddressFromLedgerError] = useState<ErrorData>();
   const [installed, setInstalled] = useState<boolean>();
   const [address, setAddress] = useState<string>();
   const toast = useToast();
@@ -142,6 +126,13 @@ export default function Home() {
       const address = accounts[0].address;
       if (typeof address !== "string") throw new Error("First account must have a string address");
       setAddress(address);
+      toast({
+        title: "Loaded",
+        description: "Got account address from Ledger.",
+        status: "success",
+        duration: 2_000,
+        isClosable: true,
+      });
     })().catch((err: any) => {
       console.error(err);
       setAddressFromLedgerError({
@@ -171,13 +162,7 @@ export default function Home() {
             {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
           </Button>
 
-          {lastAddChainError && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>{lastAddChainError.title}</AlertTitle>
-              <AlertDescription>{lastAddChainError.description}</AlertDescription>
-            </Alert>
-          )}
+          {lastAddChainError && <ErrorAlert error={lastAddChainError} />}
 
           <Heading>Step 2</Heading>
 
@@ -190,15 +175,7 @@ export default function Home() {
             Load Address
           </Button>
 
-          {loadAddressError && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>{loadAddressError.title}</AlertTitle>
-              <AlertDescription>{loadAddressError.description}</AlertDescription>
-            </Alert>
-          )}
-
-          {address && <Text size="lg">{address}</Text>}
+          {loadAddressError && <ErrorAlert error={loadAddressError} />}
 
           <Heading>Ledger</Heading>
 
@@ -211,13 +188,11 @@ export default function Home() {
             Load Address from Ledger
           </Button>
 
-          {loadAddressFromLedgerError && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>{loadAddressFromLedgerError.title}</AlertTitle>
-              <AlertDescription>{loadAddressFromLedgerError.description}</AlertDescription>
-            </Alert>
-          )}
+          {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
+
+          <Divider />
+
+          {address && <Text fontSize="2xl">{address}</Text>}
         </VStack>
       </main>
     </>
