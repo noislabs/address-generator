@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { chainId, noisConfig } from "@/lib/noisConfig";
+import { addressPrefix, chainId, noisConfig } from "@/lib/noisConfig";
 import { useState } from "react";
 import {
   Alert,
@@ -15,10 +15,16 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { FaCheck, FaPlus, FaUser } from "react-icons/fa";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import { LedgerSigner } from "@cosmjs/ledger-amino";
 
 export default function Home() {
   const [lastAddChainError, setAddChainError] = useState<{ title: string; description: string }>();
   const [loadAddressError, setLoadAddressError] = useState<{
+    title: string;
+    description: string;
+  }>();
+  const [loadAddressFromLedgerError, setAddressFromLedgerError] = useState<{
     title: string;
     description: string;
   }>();
@@ -30,6 +36,7 @@ export default function Home() {
     toast.closeAll();
     setAddChainError(undefined);
     setLoadAddressError(undefined);
+    setAddressFromLedgerError(undefined);
   }
 
   function addNoisAsSuggestedChain() {
@@ -117,6 +124,33 @@ export default function Home() {
     }
   }
 
+  function loadAddressFromLedger() {
+    resetErrors();
+    setAddress(undefined);
+
+    (async () => {
+      // Prepare ledger
+      const ledgerTransport = await TransportWebUSB.create(120000, 120000);
+
+      // Setup signer
+      const offlineSigner = new LedgerSigner(ledgerTransport, {
+        prefix: addressPrefix,
+      });
+      console.log(offlineSigner);
+      const accounts = await offlineSigner.getAccounts();
+      console.log(accounts);
+      const address = accounts[0].address;
+      if (typeof address !== "string") throw new Error("First account must have a string address");
+      setAddress(address);
+    })().catch((err: any) => {
+      console.error(err);
+      setAddressFromLedgerError({
+        title: "Ledger error",
+        description: err.message ?? err.toString(),
+      });
+    });
+  }
+
   return (
     <>
       <Head>
@@ -126,7 +160,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <VStack spacing={10}>
-        <Heading>Step 1</Heading>
+          <Heading>Step 1</Heading>
           <Button
             leftIcon={installed ? <FaCheck /> : <FaPlus />}
             isDisabled={installed}
@@ -145,7 +179,7 @@ export default function Home() {
             </Alert>
           )}
 
-        <Heading>Step 2</Heading>
+          <Heading>Step 2</Heading>
 
           <Button
             leftIcon={<FaUser />}
@@ -165,6 +199,25 @@ export default function Home() {
           )}
 
           {address && <Text size="lg">{address}</Text>}
+
+          <Heading>Ledger</Heading>
+
+          <Button
+            leftIcon={<FaUser />}
+            colorScheme="blue"
+            variant="solid"
+            onClick={() => loadAddressFromLedger()}
+          >
+            Load Address from Ledger
+          </Button>
+
+          {loadAddressFromLedgerError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>{loadAddressFromLedgerError.title}</AlertTitle>
+              <AlertDescription>{loadAddressFromLedgerError.description}</AlertDescription>
+            </Alert>
+          )}
         </VStack>
       </main>
     </>

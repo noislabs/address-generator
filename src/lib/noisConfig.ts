@@ -1,6 +1,7 @@
 import { ChainInfo } from "./keplr";
 
 export const chainId = "nois-testnet-003";
+export const addressPrefix = "nois";
 
 export const noisConfig: ChainInfo = {
   chainId: chainId,
