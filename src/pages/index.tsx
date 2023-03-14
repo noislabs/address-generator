@@ -200,7 +200,10 @@ export default function Home() {
 
               <Heading size="sm">Step 1</Heading>
 
-              <Text>Install Keplr browser extension.</Text>
+              <Text>
+                Install the <a href="https://www.keplr.app/download">Keplr browser extension</a> and
+                follow the instructions to create an account.
+              </Text>
 
               <Heading size="sm">Step 2</Heading>
               <Button
@@ -218,6 +221,7 @@ export default function Home() {
 
               <Heading size="sm">Step 3</Heading>
 
+              <Text>Ensure you selected to right account in Keplr. Then:</Text>
               <Button
                 leftIcon={<FaUserShield />}
                 colorScheme="blue"
@@ -253,7 +257,7 @@ export default function Home() {
               {loadAddressFromLedgerError && <ErrorAlert error={loadAddressFromLedgerError} />}
 
               <Heading size="sm">Step 3</Heading>
-              <Text>Check address on Ledger device.</Text>
+              <Text>Check address on Ledger device:</Text>
               <Button
                 isDisabled={!enableShowOnLedger}
                 leftIcon={<FaCheckDouble />}
