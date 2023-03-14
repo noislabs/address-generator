@@ -10,6 +10,7 @@ import {
   SimpleGrid,
   Box,
   Container,
+  Link,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
 import { FaCheck, FaCheckDouble, FaPlus, FaUserSecret, FaUserShield } from "react-icons/fa";
@@ -201,8 +202,11 @@ export default function Home() {
               <Heading size="sm">Step 1</Heading>
 
               <Text>
-                Install the <a href="https://www.keplr.app/download">Keplr browser extension</a> and
-                follow the instructions to create an account.
+                Install the{" "}
+                <Link href="https://www.keplr.app/download" isExternal>
+                  Keplr browser extension
+                </Link>{" "}
+                and follow the instructions to create an account.
               </Text>
 
               <Heading size="sm">Step 2</Heading>
