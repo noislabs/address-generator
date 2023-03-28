@@ -1,10 +1,9 @@
 import { ChainInfo } from "./keplr";
 
-export const chainId = "nois-testnet-004";
 export const addressPrefix = "nois";
 
-export const noisConfig: ChainInfo = {
-  chainId: chainId,
+export const noisTestnet: ChainInfo = {
+  chainId: "nois-testnet-004",
   chainName: "Nois Testnet",
   rpc: "https://nois-004.rpc.bccnodes.com",
   rest: "https://nois-004.api.bccnodes.com",
@@ -47,4 +46,12 @@ export const noisConfig: ChainInfo = {
     coinGeckoId: "unknown",
   },
   features: [],
+};
+
+export const noisMainnet: ChainInfo = {
+  ...noisTestnet,
+  chainId: "nois-1",
+  chainName: "Nois",
+  rpc: "https://nois-mainnet-rpc.bccnodes.com/",
+  rest: "https://nois-mainnet-api.bccnodes.com/",
 };

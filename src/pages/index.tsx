@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { addressPrefix, chainId, noisConfig } from "@/lib/noisConfig";
+import { addressPrefix, noisMainnet, noisTestnet } from "@/lib/noisConfig";
 import { useState } from "react";
 import {
   Button,
@@ -18,12 +18,17 @@ import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
 
+function capitalizeFirstLetter(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 export default function Home() {
   const [lastAddChainError, setAddChainError] = useState<ErrorData>();
   const [loadAddressError, setLoadAddressError] = useState<ErrorData>();
   const [loadAddressFromLedgerError, setLoadAddressFromLedgerError] = useState<ErrorData>();
   const [showAddressFromLedgerError, setShowAddressFromLedgerError] = useState<ErrorData>();
-  const [installed, setInstalled] = useState<boolean>();
+  const [testnetInstalled, setTestnetInstalled] = useState<boolean>();
+  const [mainnetInstalled, setMainnetInstalled] = useState<boolean>();
   const [enableShowOnLedger, setEnableShowOnLedger] = useState<boolean>(false);
   const [address, setAddress] = useState<string>();
   const toast = useToast();
@@ -36,8 +41,10 @@ export default function Home() {
     setShowAddressFromLedgerError(undefined);
   }
 
-  function addNoisAsSuggestedChain() {
+  function addNoisAsSuggestedChain(network: "testnet" | "mainnet") {
     resetErrors();
+
+    const config = network === "testnet" ? noisTestnet : noisMainnet;
 
     const anyWindow: any = window;
     if (!anyWindow.keplr) {
@@ -46,13 +53,17 @@ export default function Home() {
         description: "It seems like Keplr is not installed.",
       });
     } else {
-      anyWindow.keplr.experimentalSuggestChain(noisConfig).then(
+      anyWindow.keplr.experimentalSuggestChain(config).then(
         () => {
           console.log("Suggested chain installed");
-          setInstalled(true);
+          if (network === "testnet") {
+            setTestnetInstalled(true);
+          } else {
+            setMainnetInstalled(true);
+          }
           toast({
             title: "Installed",
-            description: "Nois Testnet installed in Keplr.",
+            description: `Nois ${capitalizeFirstLetter(network)} installed in Keplr.`,
             status: "success",
             duration: 2_000,
             isClosable: true,
@@ -69,9 +80,11 @@ export default function Home() {
     }
   }
 
-  function loadAddressFromKeplr() {
+  function loadAddressFromKeplr(network: "testnet" | "mainnet") {
     resetErrors();
     setAddress(undefined);
+
+    const config = network === "testnet" ? noisTestnet : noisMainnet;
 
     const anyWindow: any = window;
     if (!anyWindow.keplr) {
@@ -81,11 +94,11 @@ export default function Home() {
       });
     } else {
       const keplr = anyWindow.keplr;
-      keplr.enable(chainId).then(
+      keplr.enable(config.chainId).then(
         () => {
           console.log("Chain enabled");
 
-          const offlineSigner = keplr.getOfflineSigner(chainId);
+          const offlineSigner = keplr.getOfflineSigner(config.chainId);
           offlineSigner.getAccounts().then(
             (accounts: any) => {
               console.log("Accounts:", accounts);
@@ -198,9 +211,7 @@ export default function Home() {
           <Box>
             <VStack spacing={4} align="flex-start">
               <Heading>Keplr Extension</Heading>
-
               <Heading size="sm">Step 1</Heading>
-
               <Text>
                 Install the{" "}
                 <Link href="https://www.keplr.app/download" isExternal>
@@ -208,34 +219,54 @@ export default function Home() {
                 </Link>{" "}
                 and follow the instructions to create an account.
               </Text>
-
               <Heading size="sm">Step 2</Heading>
+              <Text>
+                <Button
+                  leftIcon={testnetInstalled ? <FaCheck /> : <FaPlus />}
+                  isDisabled={testnetInstalled}
+                  colorScheme="blue"
+                  variant="solid"
+                  size="sm"
+                  onClick={() => addNoisAsSuggestedChain("testnet")}
+                >
+                  {testnetInstalled ? <>Added</> : <>Add Nois Testnet to Keplr</>}
+                </Button>{" "}
+                or
+              </Text>
               <Button
-                leftIcon={installed ? <FaCheck /> : <FaPlus />}
-                isDisabled={installed}
+                leftIcon={mainnetInstalled ? <FaCheck /> : <FaPlus />}
+                isDisabled={mainnetInstalled}
                 colorScheme="blue"
                 variant="solid"
                 size="sm"
-                onClick={() => addNoisAsSuggestedChain()}
+                onClick={() => addNoisAsSuggestedChain("mainnet")}
               >
-                {installed ? <>Added</> : <>Add Nois Testnet to Keplr</>}
+                {mainnetInstalled ? <>Added</> : <>Add Nois Mainnet to Keplr</>}
               </Button>
-
               {lastAddChainError && <ErrorAlert error={lastAddChainError} />}
-
               <Heading size="sm">Step 3</Heading>
-
               <Text>Ensure you selected to right account in Keplr. Then:</Text>
+              <Text>
+                <Button
+                  leftIcon={<FaUserShield />}
+                  colorScheme="blue"
+                  variant="solid"
+                  size="sm"
+                  onClick={() => loadAddressFromKeplr("testnet")}
+                >
+                  Load address (Testnet)
+                </Button>{" "}
+                or
+              </Text>
               <Button
                 leftIcon={<FaUserShield />}
                 colorScheme="blue"
                 variant="solid"
                 size="sm"
-                onClick={() => loadAddressFromKeplr()}
+                onClick={() => loadAddressFromKeplr("mainnet")}
               >
-                Load address
+                Load address (Mainnet)
               </Button>
-
               {loadAddressError && <ErrorAlert error={loadAddressError} />}
             </VStack>
           </Box>
