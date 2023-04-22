@@ -52,6 +52,6 @@ export const noisMainnet: ChainInfo = {
   ...noisTestnet,
   chainId: "nois-1",
   chainName: "Nois",
-  rpc: "https://nois-mainnet-rpc.bccnodes.com/",
-  rest: "https://nois-mainnet-api.bccnodes.com/",
+  rpc: "https://rpc.cosmos.directory/nois/",
+  rest: "https://rest.cosmos.directory/nois/",
 };
