@@ -12,7 +12,10 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.5.1",
-    "@cosmjs/ledger-amino": "^0.30.0",
+    "@cosmjs/encoding": "^0.30.1",
+    "@cosmjs/ledger-amino": "^0.30.1",
+    "@cosmjs/proto-signing": "^0.30.1",
+    "@cosmjs/utils": "^0.30.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@ledgerhq/hw-transport-webusb": "^6.27.12",

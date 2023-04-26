@@ -17,6 +17,9 @@ import { FaCheck, FaCheckDouble, FaPlus, FaUserSecret, FaUserShield } from "reac
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import { LedgerSigner } from "@cosmjs/ledger-amino";
 import { ErrorAlert, ErrorData } from "@/lib/ErrorAlert";
+import { AccountData } from "@cosmjs/proto-signing";
+import { toBase64 } from "@cosmjs/encoding";
+import { assert } from "@cosmjs/utils";
 
 function capitalizeFirstLetter(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -30,7 +33,7 @@ export default function Home() {
   const [testnetInstalled, setTestnetInstalled] = useState<boolean>();
   const [mainnetInstalled, setMainnetInstalled] = useState<boolean>();
   const [enableShowOnLedger, setEnableShowOnLedger] = useState<boolean>(false);
-  const [address, setAddress] = useState<string>();
+  const [account, setAccount] = useState<AccountData>();
   const toast = useToast();
 
   function resetErrors() {
@@ -82,7 +85,7 @@ export default function Home() {
 
   function loadAddressFromKeplr(network: "testnet" | "mainnet") {
     resetErrors();
-    setAddress(undefined);
+    setAccount(undefined);
 
     const config = network === "testnet" ? noisTestnet : noisMainnet;
 
@@ -102,10 +105,13 @@ export default function Home() {
           offlineSigner.getAccounts().then(
             (accounts: any) => {
               console.log("Accounts:", accounts);
-              const address = accounts[0].address;
-              if (typeof address !== "string")
+              const firstAccount: AccountData = accounts[0];
+              assert(firstAccount);
+              if (typeof firstAccount.address !== "string")
                 throw new Error("First account must have a string address");
-              setAddress(address);
+              if (firstAccount.algo !== "secp256k1")
+                throw new Error("First account must have be secp256k1");
+              setAccount(firstAccount);
               toast({
                 title: "Loaded",
                 description: "Got account address from Keplr.",
@@ -136,7 +142,7 @@ export default function Home() {
 
   function loadAddressFromLedger() {
     resetErrors();
-    setAddress(undefined);
+    setAccount(undefined);
 
     (async () => {
       // Prepare ledger
@@ -148,9 +154,13 @@ export default function Home() {
       });
       const accounts = await offlineSigner.getAccounts();
       console.log(accounts);
-      const address = accounts[0].address;
-      if (typeof address !== "string") throw new Error("First account must have a string address");
-      setAddress(address);
+      const firstAccount: AccountData = accounts[0];
+      assert(firstAccount);
+      if (typeof firstAccount.address !== "string")
+        throw new Error("First account must have a string address");
+      if (firstAccount.algo !== "secp256k1")
+        throw new Error("First account must have be secp256k1");
+      setAccount(firstAccount);
       toast({
         title: "Loaded",
         description: "Got account address from Ledger.",
@@ -195,7 +205,7 @@ export default function Home() {
 
   function resetAll() {
     resetErrors();
-    setAddress(undefined);
+    setAccount(undefined);
     setEnableShowOnLedger(false);
   }
 
@@ -309,13 +319,18 @@ export default function Home() {
           </Box>
         </SimpleGrid>
 
-        {address && (
-          <Text marginTop="100px" fontSize="2xl" align="center">
-            {address}{" "}
-            <Button size="sm" onClick={() => resetAll()} title="Reset">
-              <CloseIcon />
-            </Button>
-          </Text>
+        {account && (
+          <div>
+            <Text marginTop="100px" fontSize="3xl" align="center">
+              {account.address}{" "}
+              <Button size="sm" onClick={() => resetAll()} title="Reset">
+                <CloseIcon />
+              </Button>
+            </Text>
+            <Text align="center" fontSize="sm">
+              (Pubkey: {toBase64(account.pubkey)})
+            </Text>
+          </div>
         )}
       </Container>
     </>
