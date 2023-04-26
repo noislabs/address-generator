@@ -3,10 +3,10 @@ import { ChainInfo } from "./keplr";
 export const addressPrefix = "nois";
 
 export const noisTestnet: ChainInfo = {
-  chainId: "nois-testnet-004",
+  chainId: "nois-testnet-005",
   chainName: "Nois Testnet",
-  rpc: "https://nois-004.rpc.bccnodes.com",
-  rest: "https://nois-004.api.bccnodes.com",
+  rpc: "https://nois-testnet-rpc.polkachu.com:443",
+  rest: "https://nois-testnet-api.polkachu.com:443",
   bip44: {
     coinType: 118,
   },

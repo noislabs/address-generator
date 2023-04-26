@@ -223,7 +223,7 @@ export default function Home() {
               <Text>
                 <Button
                   leftIcon={testnetInstalled ? <FaCheck /> : <FaPlus />}
-                  isDisabled={true /* Currently no Testnet available */ || testnetInstalled}
+                  isDisabled={testnetInstalled}
                   colorScheme="blue"
                   variant="solid"
                   size="sm"
@@ -252,7 +252,6 @@ export default function Home() {
                   colorScheme="blue"
                   variant="solid"
                   size="sm"
-                  isDisabled={true /* Currently no Testnet available */}
                   onClick={() => loadAddressFromKeplr("testnet")}
                 >
                   Load address (Testnet)
